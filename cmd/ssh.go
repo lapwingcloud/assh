@@ -108,6 +108,8 @@ func sshByRoleProfile(env, role, profile string) error {
 		Searcher: func(input string, index int) bool {
 			return strings.Contains(textLines[index+1], input)
 		},
+		Size: 30,
+		StartInSearchMode: true,
 	}
 	index, _, err := prompt.Run()
 	if err != nil {
@@ -169,7 +171,7 @@ func getPrivateIPsAndTextLines(result *ec2.DescribeInstancesOutput) ([]string, [
 	var privateIPs []string
 	buf := bytes.NewBufferString("")
 	writer := tabwriter.NewWriter(buf, 0, 0, 1, ' ', 0)
-	fmt.Fprintln(writer, "InstanceID\tPrivateIP\tRole\tType\tState\tUptime")
+	fmt.Fprintln(writer, "Name\tInstanceID\tPrivateIP\tRole\tType\tState\tUptime")
 	for _, reservation := range result.Reservations {
 		for _, instance := range reservation.Instances {
 			privateIP := "N/A"
@@ -177,6 +179,7 @@ func getPrivateIPsAndTextLines(result *ec2.DescribeInstancesOutput) ([]string, [
 				privateIP = *instance.PrivateIpAddress
 			}
 			fields := []string{
+				*getValueFromTags(instance.Tags, "Name"),
 				*instance.InstanceId,
 				privateIP,
 				formatRoleProfileFromTags(instance.Tags),
@@ -196,6 +199,7 @@ func getPrivateIPsAndTextLines(result *ec2.DescribeInstancesOutput) ([]string, [
 func getInstanceInfoString(instance *ec2.Instance) string {
 	buffer := bytes.NewBufferString("")
 	writer := tabwriter.NewWriter(buffer, 0, 0, 1, ' ', 0)
+	fmt.Fprintf(writer, "Name:\t%v\n", *getValueFromTags(instance.Tags, "profile"))
 	fmt.Fprintf(writer, "Instance ID:\t%v\n", *instance.InstanceId)
 	fmt.Fprintf(writer, "Private IP:\t%v\n", *instance.PrivateIpAddress)
 	fmt.Fprintf(writer, "Environment:\t%v\n", *getValueFromTags(instance.Tags, "environment"))
