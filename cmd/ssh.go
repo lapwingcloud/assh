@@ -199,7 +199,7 @@ func getPrivateIPsAndTextLines(result *ec2.DescribeInstancesOutput) ([]string, [
 func getInstanceInfoString(instance *ec2.Instance) string {
 	buffer := bytes.NewBufferString("")
 	writer := tabwriter.NewWriter(buffer, 0, 0, 1, ' ', 0)
-	fmt.Fprintf(writer, "Name:\t%v\n", *getValueFromTags(instance.Tags, "profile"))
+	fmt.Fprintf(writer, "Name:\t%v\n", *getValueFromTags(instance.Tags, "Name"))
 	fmt.Fprintf(writer, "Instance ID:\t%v\n", *instance.InstanceId)
 	fmt.Fprintf(writer, "Private IP:\t%v\n", *instance.PrivateIpAddress)
 	fmt.Fprintf(writer, "Environment:\t%v\n", *getValueFromTags(instance.Tags, "environment"))
