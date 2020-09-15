@@ -150,7 +150,7 @@ func getInstanceIDFilters(instanceID string) []*ec2.Filter {
 }
 
 func getRoleProfileFilters(role, profile string) []*ec2.Filter {
-	role = "*" + role + "*"
+	role = "*" + strings.ReplaceAll(role, "-", "*") + "*"
 	tagKeyRole := "tag:role"
 	filters := []*ec2.Filter{
 		&ec2.Filter{
